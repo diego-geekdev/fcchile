@@ -1,0 +1,12 @@
+---
+# Despliegue en cPanel (Git Version Control → Deploy HEAD Commit).
+# Copia el tema y los plugins propios a la instalación de WordPress.
+# Ajusta DEPLOYPATH si WordPress no está en public_html.
+deployment:
+  tasks:
+    - export DEPLOYPATH=$HOME/public_html/wp-content
+    - /bin/mkdir -p $DEPLOYPATH/themes $DEPLOYPATH/plugins
+    - /bin/rm -rf $DEPLOYPATH/themes/firstcoffee $DEPLOYPATH/plugins/fc-core $DEPLOYPATH/plugins/first-coffee-telon
+    - /bin/cp -R wp-content/themes/firstcoffee $DEPLOYPATH/themes/
+    - /bin/cp -R wp-content/plugins/fc-core $DEPLOYPATH/plugins/
+    - /bin/cp -R wp-content/plugins/first-coffee-telon $DEPLOYPATH/plugins/
