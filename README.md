@@ -1,4 +1,4 @@
-# First Coffee Chile — sitio WordPress
+# First Coffee Chile - sitio WordPress
 
 Tema y plugins a medida de **firstcoffeechile.cl** (Fase 1: portada con cotizador del kit).
 Desarrollo: GeekDev — Diego Catalán.
