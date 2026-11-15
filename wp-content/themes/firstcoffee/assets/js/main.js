@@ -64,7 +64,7 @@
     nav.classList.toggle('compact',y>60);
     /* hero */
     const hr=hero.getBoundingClientRect();
-    if(!RM){const p=clamp(-hr.top/(hr.height*.9),0,1);heroMedia.style.transform=`scale(${1-p*.1})`;heroMedia.style.borderRadius=`${8+p*26}px`;claim.style.transform=`translateY(${-p*70}px)`}
+    if(!RM){const p=clamp(-hr.top/(hr.height*.9),0,1);heroMedia.style.transform=`scale(${1-p*.1})`;heroMedia.style.borderRadius=`${16+p*18}px`;claim.style.transform=`translateY(${-p*70}px)`}
     /* barra móvil */
     mbar.classList.toggle('show',mob&&hr.bottom<vh*.4&&!quoteVisible);
     /* marquee */

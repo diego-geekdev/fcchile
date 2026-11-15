@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'FCT_VERSION', '1.0.0' );
+define( 'FCT_VERSION', '1.1.0' );
 
 add_action(
 	'after_setup_theme',

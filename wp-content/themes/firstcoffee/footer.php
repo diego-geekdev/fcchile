@@ -13,28 +13,35 @@ $fc_letras = array( 'FIRST', 'COFFEE' );
 ?>
 <footer>
 	<div class="wrap">
-		<div class="foot-cols">
-			<div><h4>Menú</h4>
-				<a href="<?php echo esc_url( $fc_home . '#como' ); ?>">Cómo funciona</a>
-				<a href="<?php echo esc_url( $fc_home . '#kit' ); ?>">El kit</a>
-				<a href="<?php echo esc_url( $fc_home . '#videos' ); ?>">Videos</a>
-				<a href="<?php echo esc_url( $fc_home . '#cotizar' ); ?>">Cotizar</a>
+		<div class="foot-top">
+			<div class="foot-brand">
+				<img class="foot-logo" src="<?php echo esc_url( fct_img( 'first-coffee-logo-blanco.png' ) ); ?>" alt="First Coffee" width="548" height="458" loading="lazy">
+				<p>Café de grano en la calle,<br>directo a tu ventanilla.</p>
 			</div>
-			<div><h4>Redes</h4>
-				<?php if ( $fc_ig ) : ?><a href="<?php echo esc_url( $fc_ig ); ?>" target="_blank" rel="noopener">Instagram ↗</a><?php endif; ?>
-				<?php if ( $fc_tt ) : ?><a href="<?php echo esc_url( $fc_tt ); ?>" target="_blank" rel="noopener">TikTok ↗</a><?php endif; ?>
-			</div>
-			<?php if ( $fc_mail || $fc_wa_txt ) : ?>
-			<div><h4>Escríbenos</h4>
-				<?php if ( $fc_mail ) : ?><a href="mailto:<?php echo esc_attr( $fc_mail ); ?>"><?php echo esc_html( $fc_mail ); ?></a><?php endif; ?>
-				<?php if ( $fc_wa_txt ) : ?><a href="<?php echo esc_url( $fc_wa ); ?>" target="_blank" rel="noopener">WhatsApp <?php echo esc_html( $fc_wa_txt ); ?></a><?php endif; ?>
-			</div>
-			<?php endif; ?>
-			<?php if ( $fc_trab ) : ?>
-			<div><h4>Trabaja con nosotros</h4><p><?php echo esc_html( $fc_trab ); ?></p></div>
-			<?php endif; ?>
+			<nav class="foot-cols" aria-label="Pie de página">
+				<div><h4>Menú</h4>
+					<a href="<?php echo esc_url( $fc_home . '#como' ); ?>">Cómo funciona</a>
+					<a href="<?php echo esc_url( $fc_home . '#kit' ); ?>">El kit</a>
+					<a href="<?php echo esc_url( $fc_home . '#videos' ); ?>">Videos</a>
+					<a href="<?php echo esc_url( $fc_home . '#cotizar' ); ?>">Cotizar</a>
+				</div>
+				<?php if ( $fc_ig || $fc_tt ) : ?>
+				<div><h4>Redes</h4>
+					<?php if ( $fc_ig ) : ?><a href="<?php echo esc_url( $fc_ig ); ?>" target="_blank" rel="noopener">Instagram ↗</a><?php endif; ?>
+					<?php if ( $fc_tt ) : ?><a href="<?php echo esc_url( $fc_tt ); ?>" target="_blank" rel="noopener">TikTok ↗</a><?php endif; ?>
+				</div>
+				<?php endif; ?>
+				<?php if ( $fc_mail || $fc_wa_txt ) : ?>
+				<div><h4>Escríbenos</h4>
+					<?php if ( $fc_wa_txt ) : ?><a href="<?php echo esc_url( $fc_wa ); ?>" target="_blank" rel="noopener">WhatsApp<br><span class="foot-dato"><?php echo esc_html( $fc_wa_txt ); ?></span></a><?php endif; ?>
+					<?php if ( $fc_mail ) : ?><a href="mailto:<?php echo esc_attr( $fc_mail ); ?>">Correo<br><span class="foot-dato"><?php echo esc_html( $fc_mail ); ?></span></a><?php endif; ?>
+				</div>
+				<?php endif; ?>
+				<?php if ( $fc_trab ) : ?>
+				<div><h4>Trabaja con nosotros</h4><p><?php echo esc_html( $fc_trab ); ?></p></div>
+				<?php endif; ?>
+			</nav>
 		</div>
-		<img class="foot-logo" src="<?php echo esc_url( fct_img( 'first-coffee-logo-blanco.png' ) ); ?>" alt="First Coffee" width="548" height="458" loading="lazy">
 		<div class="wordmark pending-ok" id="wordmark" aria-label="First Coffee">
 			<?php
 			$fc_i = 0;
@@ -47,7 +54,18 @@ $fc_letras = array( 'FIRST', 'COFFEE' );
 			}
 			?>
 		</div>
-		<div class="foot-bottom"><span>© <?php echo esc_html( wp_date( 'Y' ) ); ?> First Coffee Chile</span><span>Sitio por <a href="https://geekdev.cl" target="_blank" rel="noopener" style="color:inherit">GeekDev</a></span></div>
+		<script>
+		(function(){var w=document.getElementById('wordmark');if(!w)return;
+			function fit(){var ws=w.querySelectorAll('.w');if(!ws.length)return;w.style.fontSize='100px';
+				var a=ws[0].getBoundingClientRect().left,b=ws[ws.length-1].getBoundingClientRect().right,n=b-a,c=w.clientWidth;
+				if(n>0&&c>0)w.style.fontSize=Math.min(260,Math.floor(100*c/n*0.995))+'px';}
+			fit();addEventListener('resize',fit);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);})();
+		</script>
+		<div class="foot-bottom">
+			<span>© <?php echo esc_html( wp_date( 'Y' ) ); ?> First Coffee Chile · Santiago</span>
+			<a class="foot-up" href="#top">Volver arriba ↑</a>
+			<span>Sitio por <a href="https://geekdev.cl" target="_blank" rel="noopener">GeekDev</a></span>
+		</div>
 	</div>
 </footer>
 
