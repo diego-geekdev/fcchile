@@ -1,4 +1,4 @@
-# First Coffee Chile — sitio WordPress
+# First Coffee Chile - sitio WordPress
 
 Tema y plugins a medida de **firstcoffeechile.cl**: dispensador portátil de café caliente (portada, páginas de producto, calculadora y cotizador).
 Desarrollo: GeekDev — Diego Catalán.
