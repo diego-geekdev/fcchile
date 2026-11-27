@@ -32,7 +32,7 @@ function fc_campos_definicion() {
 		),
 		'fc_pieza' => array(
 			'titulo' => 'Datos de la pieza',
-			'ayuda'  => 'La descripción va en el editor de arriba. Hay tres lugares en la ilustración del kit: cada pieza ocupa uno.',
+			'ayuda'  => 'La descripción va en el editor de arriba. Hay tres lugares en la ilustración del equipo: cada componente ocupa uno.',
 			'campos' => array(
 				'slot'     => array(
 					'label'   => 'Lugar en la ilustración',
@@ -42,12 +42,44 @@ function fc_campos_definicion() {
 				'etiqueta' => array(
 					'label' => 'Etiqueta corta en la ilustración',
 					'type'  => 'text',
-					'ph'    => 'Termo 5 litros',
+					'ph'    => 'Estanque 10 L',
 				),
 				'specs'    => array(
 					'label' => 'Características (una por línea)',
 					'type'  => 'lines',
 					'ph'    => "Capacidad: 5 litros\nMantiene la temperatura: 6 horas",
+				),
+			),
+		),
+		'fc_beneficio' => array(
+			'titulo' => 'Datos del beneficio',
+			'ayuda'  => 'El texto va en el editor de arriba (una o dos frases). Se muestran en la portada en el orden definido.',
+			'campos' => array(
+				'icono' => array(
+					'label'   => 'Ícono',
+					'type'    => 'select',
+					'options' => 'fc_iconos_beneficio',
+				),
+			),
+		),
+		'fc_uso'   => array(
+			'titulo' => 'Datos del uso',
+			'ayuda'  => 'La descripción va en el editor de arriba. La imagen destacada se usa de fondo en la portada.',
+			'campos' => array(
+				'lugares'  => array(
+					'label' => 'Lugares o ejemplos',
+					'type'  => 'text',
+					'ph'    => 'Paraderos, metro, oficinas, ferias',
+				),
+				'recupera' => array(
+					'label' => 'Dato destacado',
+					'type'  => 'text',
+					'ph'    => 'Se paga en ≈ 10,5 jornadas',
+				),
+				'enlace'   => array(
+					'label' => 'Enlace «Ver brochure» (opcional)',
+					'type'  => 'url',
+					'ph'    => 'https://firstcoffeechile.cl/brochures/calle/',
 				),
 			),
 		),

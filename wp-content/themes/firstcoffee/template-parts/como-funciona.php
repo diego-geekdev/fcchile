@@ -19,7 +19,7 @@ $fc_escena = array(
 		<div class="wrap howto-head">
 			<div class="sec-head" style="margin:0">
 				<span class="eyebrow">Cómo funciona</span>
-				<h2>Del rojo a tu<br>primer sorbo.</h2>
+				<h2>Cuatro pasos,<br>sin electricidad.</h2>
 			</div>
 			<span class="counter" aria-live="polite"><b id="hCount">01</b> / <?php echo esc_html( str_pad( (string) $fc_total, 2, '0', STR_PAD_LEFT ) ); ?></span>
 		</div>

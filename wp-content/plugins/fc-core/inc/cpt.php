@@ -143,6 +143,46 @@ function fc_registrar_cpts() {
 		)
 	);
 
+	register_post_type(
+		'fc_beneficio',
+		array_merge(
+			$base_contenido,
+			array(
+				'labels'   => array(
+					'name'          => 'Beneficios',
+					'singular_name' => 'Beneficio',
+					'menu_name'     => 'Beneficios',
+					'all_items'     => 'Beneficios («Por qué»)',
+					'add_new'       => 'Añadir beneficio',
+					'add_new_item'  => 'Añadir beneficio',
+					'edit_item'     => 'Editar beneficio',
+					'not_found'     => 'No hay beneficios.',
+				),
+				'supports' => array( 'title', 'editor', 'page-attributes' ),
+			)
+		)
+	);
+
+	register_post_type(
+		'fc_uso',
+		array_merge(
+			$base_contenido,
+			array(
+				'labels'   => array(
+					'name'          => 'Usos («Dónde se usa»)',
+					'singular_name' => 'Uso',
+					'menu_name'     => 'Usos',
+					'all_items'     => 'Usos («Dónde se usa»)',
+					'add_new'       => 'Añadir uso',
+					'add_new_item'  => 'Añadir uso',
+					'edit_item'     => 'Editar uso',
+					'not_found'     => 'No hay usos.',
+				),
+				'supports' => array( 'title', 'editor', 'thumbnail', 'page-attributes' ),
+			)
+		)
+	);
+
 	register_taxonomy(
 		'fc_tipo_video',
 		'fc_video',
@@ -179,6 +219,8 @@ add_filter(
 			'fc_pieza' => 'Nombre de la pieza (por ejemplo: «Mochila térmica»)',
 			'fc_video' => 'Texto que aparece sobre el video',
 			'fc_faq'   => 'Escribe la pregunta',
+			'fc_beneficio' => 'Título corto del beneficio (por ejemplo: «Sin electricidad»)',
+			'fc_uso'   => 'Nombre del uso (por ejemplo: «Café en la calle»)',
 		);
 		return isset( $mapa[ $post->post_type ] ) ? $mapa[ $post->post_type ] : $texto;
 	},
@@ -190,7 +232,7 @@ add_filter(
 add_filter(
 	'post_updated_messages',
 	function ( $m ) {
-		foreach ( array( 'fc_paso', 'fc_pieza', 'fc_video', 'fc_faq', 'fc_cotizacion' ) as $t ) {
+		foreach ( array( 'fc_paso', 'fc_pieza', 'fc_video', 'fc_faq', 'fc_beneficio', 'fc_uso', 'fc_cotizacion' ) as $t ) {
 			$m[ $t ] = array_fill( 0, 11, 'Cambios guardados.' );
 			$m[ $t ][0] = '';
 			$m[ $t ][6] = 'Publicado. Ya se ve en el sitio.';
@@ -209,7 +251,7 @@ add_action(
 			return;
 		}
 		$t = $q->get( 'post_type' );
-		if ( in_array( $t, array( 'fc_paso', 'fc_pieza', 'fc_video', 'fc_faq' ), true ) && ! $q->get( 'orderby' ) ) {
+		if ( in_array( $t, array( 'fc_paso', 'fc_pieza', 'fc_video', 'fc_faq', 'fc_beneficio', 'fc_uso' ), true ) && ! $q->get( 'orderby' ) ) {
 			$q->set( 'orderby', 'menu_order' );
 			$q->set( 'order', 'ASC' );
 		}
@@ -217,7 +259,7 @@ add_action(
 );
 
 /* Columna «Orden» en las listas de contenidos. */
-foreach ( array( 'fc_paso', 'fc_pieza', 'fc_video', 'fc_faq' ) as $fc_tipo ) {
+foreach ( array( 'fc_paso', 'fc_pieza', 'fc_video', 'fc_faq', 'fc_beneficio', 'fc_uso' ) as $fc_tipo ) {
 	add_filter(
 		"manage_{$fc_tipo}_posts_columns",
 		function ( $cols ) {

@@ -15,12 +15,17 @@ function fc_ajustes_defecto() {
 		'correo_avisos'   => get_option( 'admin_email' ),
 		'instagram'       => 'https://www.instagram.com/firstcoffeechile/',
 		'tiktok'          => '',
-		'hero_titulo'     => 'Tu café en el taco.',
+		'hero_titulo'     => 'Tu café caliente a la espalda, listo para servir.',
 		'hero_video'      => '',
 		'hero_poster'     => '',
-		'hero_bajada'     => 'Café de grano servido en tu ventanilla mientras esperas la luz verde. Y si quieres hacer lo mismo en tu ciudad, te armamos el kit.',
-		'marquee'         => "Café de grano\nDirecto a tu ventanilla\nTu café en el taco",
-		'kit_bajada'      => 'Mochila, termo y piezas armadas por nuestro mecánico. Es el mismo equipo que usamos todos los días en el taco.',
+		'hero_bajada'     => 'Un estanque de acero inoxidable dentro de una mochila térmica. Le das presión con una bomba manual y el café sale por la manguera. Sin electricidad, para vender en la calle, en eventos o en tu negocio.',
+		'marquee'         => "10 litros\n35 vasos por carga\nSin electricidad\nIngeniería chilena",
+		'kit_bajada'      => 'Estanque de acero inoxidable de 10 L, mochila con aislación de 25 mm, bomba manual de pie y línea de servicio con grifo. Llega armado, probado y con su manual.',
+		'precio_equipo'   => '550000',
+		'precio_vaso'     => '2490',
+		'vasos_carga'     => '35',
+		'margen'          => '60',
+		'jornadas_semana' => '5',
 		'plazo_respuesta' => 'a la brevedad',
 		'stat1_valor'     => '',
 		'stat1_texto'     => 'seguidores en Instagram',
@@ -55,23 +60,20 @@ function fc_ajustes_campos() {
 				'hero_video'      => array( 'Video principal (MP4 corto, en bucle y sin sonido)', 'media', 'video', 'Ideal: 10 a 20 segundos, horizontal, menos de 8 MB.' ),
 				'hero_poster'     => array( 'Imagen principal', 'media', 'image', 'Se muestra mientras carga el video, o sola si no hay video.' ),
 				'marquee'         => array( 'Frases de la cinta en movimiento', 'textarea', '', 'Una frase por línea.' ),
-				'kit_bajada'      => array( 'Texto de la sección «El kit»', 'textarea', '', '' ),
+				'kit_bajada'      => array( 'Texto de la sección «El equipo»', 'textarea', '', '' ),
 				'plazo_respuesta' => array( 'Plazo de respuesta a cotizaciones', 'text', 'en 24 horas hábiles', 'Completa la frase «Te respondemos …».' ),
 				'trabaja_texto'   => array( 'Texto «Trabaja con nosotros» (pie de página)', 'text', '¿Quieres ser barista en la calle? Escríbenos.', 'Si queda vacío, la columna no se muestra.' ),
 			),
 		),
-		'numeros'  => array(
-			'titulo' => 'Números («Lo que llevamos recorrido»)',
-			'ayuda'  => 'Hasta 4 cifras. Si una queda sin valor, no se muestra; si todas quedan vacías, se oculta la sección. Las cifras como 6.800+ o $2.000 se animan solas.',
+		'rentabilidad' => array(
+			'titulo' => 'Precios y rentabilidad',
+			'ayuda'  => 'Valores referenciales en pesos chilenos. Se usan en la sección «¿En cuántos días se paga?», en la calculadora y en la tabla de escenarios. Escribe solo números.',
 			'campos' => array(
-				'stat1_valor' => array( 'Cifra 1', 'text', '6.800+', '' ),
-				'stat1_texto' => array( 'Texto cifra 1', 'text', 'seguidores en Instagram', '' ),
-				'stat2_valor' => array( 'Cifra 2', 'text', '$2.000', '' ),
-				'stat2_texto' => array( 'Texto cifra 2', 'text', 'el café de grano', '' ),
-				'stat3_valor' => array( 'Cifra 3', 'text', '', '' ),
-				'stat3_texto' => array( 'Texto cifra 3', 'text', 'cafés vendidos', '' ),
-				'stat4_valor' => array( 'Cifra 4', 'text', '', '' ),
-				'stat4_texto' => array( 'Texto cifra 4', 'text', 'comunas donde estamos', '' ),
+				'precio_equipo'   => array( 'Precio del equipo ($)', 'text', '550000', '' ),
+				'precio_vaso'     => array( 'Precio de venta por vaso ($)', 'text', '2490', '' ),
+				'vasos_carga'     => array( 'Vasos por carga', 'text', '35', 'Un estanque de 10 L rinde unos 35 vasos.' ),
+				'margen'          => array( 'Margen sobre la venta (%)', 'text', '60', 'Después de café, vaso y azúcar.' ),
+				'jornadas_semana' => array( 'Jornadas de venta por semana', 'text', '5', '' ),
 			),
 		),
 	);
@@ -214,12 +216,12 @@ function fc_ajustes_render() {
 
 		<?php if ( current_user_can( 'manage_options' ) ) : ?>
 			<hr>
-			<h2 class="title">Contenido de ejemplo</h2>
-			<p class="description">Crea los pasos, piezas, videos y preguntas del prototipo para partir con algo que editar. Solo crea lo que esté vacío; no borra nada.</p>
+			<h2 class="title">Contenido del sitio</h2>
+			<p class="description">Carga el contenido del sitio de First Coffee (pasos, componentes, beneficios, usos, preguntas y las páginas La empresa, Ficha, Manual, Servicio y Brochures). Lo que ya exista de pasos, componentes y preguntas se mueve a la papelera (se puede recuperar). Las páginas existentes con el mismo nombre no se tocan.</p>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="fc_contenido_ejemplo">
 				<?php wp_nonce_field( 'fc_contenido_ejemplo' ); ?>
-				<?php submit_button( 'Cargar contenido de ejemplo', 'secondary', 'submit', false ); ?>
+				<?php submit_button( 'Cargar contenido del sitio', 'secondary', 'submit', false, array( 'onclick' => "return confirm('Se moverán a la papelera los pasos, componentes y preguntas actuales. ¿Continuar?');" ) ); ?>
 			</form>
 		<?php endif; ?>
 	</div>

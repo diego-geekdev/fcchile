@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'FCT_VERSION', '1.1.0' );
+define( 'FCT_VERSION', '2.0.0' );
 
 add_action(
 	'after_setup_theme',
@@ -18,8 +18,66 @@ add_action(
 		add_theme_support( 'html5', array( 'script', 'style', 'gallery', 'caption' ) );
 		add_image_size( 'fc-vertical', 720, 1100, true );
 		add_image_size( 'fc-panel', 1100, 620, true );
+		add_post_type_support( 'page', 'excerpt' );
+		register_nav_menus( array( 'principal' => 'Menú principal' ) );
 	}
 );
+
+/**
+ * Enlaces del menú principal: el menú «Menú principal» si está asignado en Apariencia → Menús;
+ * si no, las páginas del sitio por slug (las que existan).
+ *
+ * @return array[] [ [url, texto, activo] ]
+ */
+function fct_menu() {
+	$out  = array();
+	$locs = get_nav_menu_locations();
+	if ( ! empty( $locs['principal'] ) ) {
+		$items = wp_get_nav_menu_items( $locs['principal'] );
+		foreach ( (array) $items as $it ) {
+			if ( ! $it->menu_item_parent ) {
+				$out[] = array( $it->url, $it->title, (int) $it->object_id === get_queried_object_id() && 'post_type' === $it->type );
+			}
+		}
+		return $out;
+	}
+	$out[] = array( home_url( '/' ), 'Máquinas', is_front_page() );
+	$paginas = array(
+		'la-empresa' => 'La empresa',
+		'ficha'      => 'Ficha y rentabilidad',
+		'manual'     => 'Manual',
+		'servicio'   => 'Servicio',
+		'brochures'  => 'Brochures',
+	);
+	foreach ( $paginas as $slug => $texto ) {
+		$pg = get_page_by_path( $slug );
+		if ( $pg && 'publish' === $pg->post_status ) {
+			$activo = is_page( $pg->ID ) || ( is_page() && in_array( $pg->ID, get_post_ancestors( get_queried_object_id() ), true ) );
+			$out[]  = array( get_permalink( $pg ), $texto, $activo );
+		}
+	}
+	return $out;
+}
+
+/** URL de una página por slug (o el inicio si no existe). */
+function fct_pagina_url( $slug, $ancla = '' ) {
+	$pg = get_page_by_path( $slug );
+	return ( $pg ? get_permalink( $pg ) : home_url( '/' ) ) . $ancla;
+}
+
+/** Ícono SVG de un beneficio. */
+function fct_icono( $clave ) {
+	$i = array(
+		'calor'    => '<path d="M5 11h11v4a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5v-4Z"/><path d="M16 12h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3c-.8 1 .8 2 0 3M11 3c-.8 1 .8 2 0 3M14 3c-.8 1 .8 2 0 3"/>',
+		'manos'    => '<rect x="6" y="6" width="12" height="15" rx="3"/><path d="M9 6V4.5a3 3 0 0 1 6 0V6M9 13h6"/>',
+		'energia'  => '<path d="M13 2 5 13h6l-1 9 8-11h-6l1-9Z"/><path d="M3 3l18 18"/>',
+		'limpieza' => '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z"/><path d="M9.5 15a2.5 2.5 0 0 0 2.5 2.5"/>',
+		'chile'    => '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+		'listo'    => '<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16.5 9.5"/>',
+	);
+	$d = isset( $i[ $clave ] ) ? $i[ $clave ] : $i['listo'];
+	return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $d . '</svg>';
+}
 
 /** Ajuste del sitio con respaldo si el plugin no está activo. */
 function fct_opt( $clave, $defecto = '' ) {

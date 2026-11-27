@@ -17,8 +17,8 @@ add_filter(
 			'cb'        => '<input type="checkbox">',
 			'fc_fecha'  => 'Fecha',
 			'title'     => 'Nombre',
-			'fc_kits'   => 'Kits',
-			'fc_logo'   => 'Logo',
+			'fc_uso'    => 'Dónde venderá',
+			'fc_kits'   => 'Equipos',
 			'fc_contac' => 'Contacto',
 			'fc_comuna' => 'Comuna',
 			'fc_estado' => 'Estado',
@@ -32,6 +32,9 @@ add_action(
 		switch ( $col ) {
 			case 'fc_fecha':
 				echo esc_html( get_the_date( 'j M Y · H:i', $id ) );
+				break;
+			case 'fc_uso':
+				echo esc_html( fc_campo( $id, 'uso', '—' ) );
 				break;
 			case 'fc_kits':
 				echo esc_html( fc_campo( $id, 'kits' ) );

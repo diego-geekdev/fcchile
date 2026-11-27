@@ -2,13 +2,8 @@
 /**
  * Cabecera: barra de progreso, intro con el logo, navegación y menú móvil.
  */
-$fc_home  = is_front_page() ? '' : home_url( '/' );
-$fc_links = array(
-	'#como'   => 'Cómo funciona',
-	'#kit'    => 'El kit',
-	'#videos' => 'Videos',
-	'#faq'    => 'Preguntas',
-);
+$fc_menu    = fct_menu();
+$fc_cotizar = is_front_page() ? '#cotizar' : home_url( '/#cotizar' );
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
@@ -38,10 +33,10 @@ $fc_links = array(
 			<img class="brand-mark" src="<?php echo esc_url( fct_img( 'first-coffee-isotipo-blanco.png' ) ); ?>" alt="" width="256" height="249">
 		</a>
 		<nav class="nav-links" aria-label="Principal">
-			<?php foreach ( $fc_links as $ancla => $texto ) : ?>
-				<a href="<?php echo esc_url( $fc_home . $ancla ); ?>"><?php echo esc_html( $texto ); ?></a>
+			<?php foreach ( $fc_menu as $fc_it ) : ?>
+				<a href="<?php echo esc_url( $fc_it[0] ); ?>"<?php echo $fc_it[2] ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $fc_it[1] ); ?></a>
 			<?php endforeach; ?>
-			<a class="btn small magnet" href="<?php echo esc_url( $fc_home . '#cotizar' ); ?>" data-cursor="Cotizar">Cotizar mi kit</a>
+			<a class="btn small magnet" href="<?php echo esc_url( $fc_cotizar ); ?>" data-cursor="Cotizar">Cotizar</a>
 		</nav>
 		<button class="menu-btn" type="button" id="menuBtn" aria-label="Abrir menú" aria-expanded="false">
 			<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 8h16M4 16h16"/></svg>
@@ -55,9 +50,9 @@ $fc_links = array(
 	</button>
 	<?php
 	$fc_i = 0;
-	foreach ( $fc_links as $ancla => $texto ) :
+	foreach ( $fc_menu as $fc_it ) :
 		?>
-		<a href="<?php echo esc_url( $fc_home . $ancla ); ?>" style="--i:<?php echo (int) $fc_i++; ?>"><?php echo esc_html( $texto ); ?></a>
+		<a href="<?php echo esc_url( $fc_it[0] ); ?>" style="--i:<?php echo (int) $fc_i++; ?>"><?php echo esc_html( $fc_it[1] ); ?></a>
 	<?php endforeach; ?>
-	<a href="<?php echo esc_url( $fc_home . '#cotizar' ); ?>" style="--i:<?php echo (int) $fc_i; ?>;color:var(--paint)">Cotizar mi kit</a>
+	<a href="<?php echo esc_url( $fc_cotizar ); ?>" style="--i:<?php echo (int) $fc_i; ?>;color:var(--paint)">Cotizar</a>
 </div>

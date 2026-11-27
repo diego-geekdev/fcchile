@@ -158,41 +158,38 @@
   /* FAQ: una abierta a la vez */
   $$('.faq details').forEach(d=>d.addEventListener('toggle',()=>{if(d.open)$$('.faq details').forEach(o=>{if(o!==d)o.open=false})}));
 
-  /* Cotizador */
-  const DEF={step:1,qty:'',logo:'',logoName:'',comments:'',name:'',phone:'',email:'',comuna:'',src:''};
-  let Q=Object.assign({},DEF),logoData='',logoFile=null,touched={},sending=false;
-  const saved=ls.get('fc-quote');
-  if(saved){try{const s=JSON.parse(saved);if(s&&s.step>1&&s.step<5){Q=Object.assign({},DEF,s);Q.logoName='';$('#resume').hidden=false}}catch(e){}}
+  /* Cotizador: dónde vas a vender → equipos → contacto → revisar */
+  const qcard=$('#qcard');
+  if(qcard){
+  const DEF={step:1,uso:'',qty:'',comments:'',name:'',phone:'',email:'',comuna:'',src:''};
+  let Q=Object.assign({},DEF),touched={},sending=false;const startedAt=Date.now();
+  const saved=ls.get('fc-quote2');
+  if(saved){try{const s=JSON.parse(saved);if(s&&s.step>1&&s.step<5){Q=Object.assign({},DEF,s);$('#resume').hidden=false}}catch(e){}}
   const steps=$$('.qstep');
-  function save(){if(Q.step>=5)ls.del('fc-quote');else ls.set('fc-quote',JSON.stringify(Q))}
-  function setText(id,v,empty){const el=$(id);el.textContent=v||empty;el.classList.toggle('empty',!v)}
+  function save(){if(Q.step>=5)ls.del('fc-quote2');else ls.set('fc-quote2',JSON.stringify(Q))}
+  function setText(id,v,empty){const el=$(id);if(!el)return;el.textContent=v||empty;el.classList.toggle('empty',!v)}
   function render(focus){
     steps.forEach(s=>{s.hidden=+s.dataset.step!==Q.step});
     const pct=Q.step>=5?1:(Q.step-1)/4;const road=$('#qcar').parentElement;
     $('#qcar').style.transform=`translateX(${pct*(road.clientWidth-46)}px)`;$('#qfill').style.width=(pct*100)+'%';
     $('#qLabel').textContent=Q.step>=5?'Enviada':`Paso ${Q.step} de 4`;
+    $$('[data-uso]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.uso===Q.uso)));
     $$('[data-qty]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.qty===Q.qty)));
-    $$('[data-logo]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.logo===Q.logo)));
     $$('[data-src]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.src===Q.src)));
-    $('#logoArea').hidden=Q.logo!=='si';
     $('#q-comments').value=Q.comments;['name','phone','email','comuna'].forEach(k=>{const i=$('#q-'+k);if(i.value!==Q[k])i.value=Q[k]});
-    setText('#sQty',Q.qty,'Sin elegir');
-    setText('#sLogo',Q.logo==='si'?(Q.logoName?'Con logo: '+Q.logoName:'Con logo (lo mandas después)'):(Q.logo==='no'?'Sin logo':''),'Sin elegir');
-    setText('#sCom',Q.comments,'Sin comentarios');
+    setText('#sUso',Q.uso,'Sin elegir');setText('#sQty',Q.qty,'Sin elegir');setText('#sCom',Q.comments,'Sin comentarios');
     setText('#sCon',[Q.name,Q.phone,Q.email].filter(Boolean).join(' · '),'Falta completar');
     if(Q.step===4)buildReview();
-    if(focus){const h=$('.qstep:not([hidden]) h3');if(h)h.focus({preventScroll:true});const r=$('#qcard').getBoundingClientRect();if(r.top<0||r.top>innerHeight*.5)goTo('#qcard')}
+    if(focus){const h=$('.qstep:not([hidden]) h3');if(h)h.focus({preventScroll:true});const r=qcard.getBoundingClientRect();if(r.top<0||r.top>innerHeight*.5)goTo('#qcard')}
     save();
   }
   function go(n){Q.step=n;render(true)}
-  $$('[data-qty]').forEach(b=>b.addEventListener('click',()=>{Q.qty=b.dataset.qty;render();setTimeout(()=>go(2),RM?0:380)}));
-  $$('[data-logo]').forEach(b=>b.addEventListener('click',()=>{Q.logo=b.dataset.logo;render()}));
+  $$('[data-uso]').forEach(b=>b.addEventListener('click',()=>{Q.uso=b.dataset.uso;render();setTimeout(()=>go(2),RM?0:380)}));
+  $$('[data-qty]').forEach(b=>b.addEventListener('click',()=>{Q.qty=b.dataset.qty;$('#qtyErr').textContent='';render()}));
   $$('[data-src]').forEach(b=>b.addEventListener('click',()=>{Q.src=Q.src===b.dataset.src?'':b.dataset.src;render()}));
   $$('[data-back]').forEach(b=>b.addEventListener('click',()=>go(Math.max(1,Q.step-1))));
   $('#q-comments').addEventListener('input',e=>{Q.comments=e.target.value.trim();setText('#sCom',Q.comments,'Sin comentarios');save()});
-  $('[data-next="2"]').addEventListener('click',()=>{
-    if(!Q.logo){$('#logoErr2').textContent='Elige si quieres tu logo o no.';return}
-    $('#logoErr2').textContent='';go(3)});
+  $('[data-next="2"]').addEventListener('click',()=>{if(!Q.qty){$('#qtyErr').textContent='Elige cuántos equipos necesitas.';return}go(3)});
   const V={
     name:v=>v.trim().length>=2?'':'Escribe tu nombre.',
     phone:v=>{let d=v.replace(/\D/g,'');if(d.startsWith('56'))d=d.slice(2);return /^9\d{8}$/.test(d)?'':'Escribe un celular de 9 dígitos que parta en 9, por ejemplo 9 1234 5678.'},
@@ -205,27 +202,26 @@
     i.addEventListener('blur',()=>{if(i.value){touched[k]=true;check(k)}})});
   $('[data-next="3"]').addEventListener('click',()=>{let ok=true,first=null;Object.keys(V).forEach(k=>{touched[k]=true;if(!check(k)){ok=false;first=first||k}});if(ok)go(4);else $('#q-'+first).focus()});
   function buildReview(){
-    const rows=[['Kits',Q.qty,1],['Logo',Q.logo==='si'?(Q.logoName?'Con logo: '+Q.logoName:'Con logo (lo mando después)'):'Sin logo',2],['Comentarios',Q.comments||'Sin comentarios',2],['Nombre',Q.name,3],['WhatsApp',Q.phone,3],['Correo',Q.email,3],['Comuna',Q.comuna,3],['Nos conociste por',Q.src||'Sin respuesta',3]];
+    const rows=[['Dónde vas a vender',Q.uso,1],['Equipos',Q.qty,2],['Comentarios',Q.comments||'Sin comentarios',2],['Nombre',Q.name,3],['WhatsApp',Q.phone,3],['Correo',Q.email,3],['Comuna',Q.comuna,3],['Nos conociste por',Q.src||'Sin respuesta',3]];
     const dl=$('#review');dl.innerHTML='';
     rows.forEach(([k,v,s])=>{const d=document.createElement('div');const dt=document.createElement('dt');dt.textContent=k;const dd=document.createElement('dd');dd.textContent=v;const b=document.createElement('button');b.type='button';b.className='linkbtn';b.textContent='Editar';b.setAttribute('aria-label','Editar '+k.toLowerCase());b.addEventListener('click',()=>go(s));d.append(dt,dd,b);dl.appendChild(d)});
   }
-  $('#qcard').addEventListener('submit',e=>e.preventDefault());
+  qcard.addEventListener('submit',e=>e.preventDefault());
   $('#send').addEventListener('click',async()=>{
     if(sending)return;const btn=$('#send'),err=$('#sendErr');err.textContent='';
     const C=FC.cotizar;if(!C){err.textContent='El cotizador no está disponible ahora. Escríbenos por WhatsApp.';return}
     const fd=new FormData();
     fd.append('fc_nonce',C.nonce);fd.append('inicio',String(startedAt));fd.append('sitio_web',$('#q-web').value);
-    fd.append('kits',Q.qty);fd.append('logo',Q.logo);fd.append('comentarios',Q.comments);
+    fd.append('uso',Q.uso);fd.append('kits',Q.qty);fd.append('comentarios',Q.comments);
     fd.append('nombre',Q.name);fd.append('whatsapp',Q.phone);fd.append('correo',Q.email);fd.append('comuna',Q.comuna);fd.append('origen',Q.src);
-    if(Q.logo==='si'&&logoFile)fd.append('archivo',logoFile,logoFile.name);
     sending=true;btn.disabled=true;const txt=btn.textContent;btn.textContent='Enviando…';
     try{
       const r=await fetch(C.endpoint,{method:'POST',body:fd,credentials:'same-origin'});
       let j={};try{j=await r.json()}catch(x){}
       if(!r.ok||!j.ok){
         err.textContent=(j&&j.mensaje)||'No pudimos enviar tu cotización. Inténtalo de nuevo o escríbenos por WhatsApp.';
-        const map={name:3,phone:3,email:3,comuna:3,kits:1,logo:2};
-        if(j&&j.campo&&map[j.campo]&&map[j.campo]!==4){go(map[j.campo]);const f=$(`.field[data-f="${j.campo}"]`);if(f){f.classList.add('bad');const e2=$('#e-'+j.campo);if(e2)e2.textContent=j.mensaje}else if(j.campo==='logo'){$('#logoErr2').textContent=j.mensaje}}
+        const map={name:3,phone:3,email:3,comuna:3,uso:1,kits:2};
+        if(j&&j.campo&&map[j.campo]){go(map[j.campo]);const f=$(`.field[data-f="${j.campo}"]`);if(f){f.classList.add('bad');const e2=$('#e-'+j.campo);if(e2)e2.textContent=j.mensaje}else if(j.campo==='kits'){$('#qtyErr').textContent=j.mensaje}}
         return;
       }
       $('#doneNum').textContent=j.numero?`Número de solicitud: ${j.numero} · ${j.fecha||''}`:'';
@@ -233,47 +229,11 @@
     }catch(x){err.textContent='Parece que no hay conexión. Revisa tu internet e inténtalo de nuevo.'}
     finally{sending=false;btn.disabled=false;btn.textContent=txt}
   });
-  function reset(){Q=Object.assign({},DEF);touched={};clearLogo();$$('.field').forEach(f=>f.classList.remove('ok','bad'));$$('.field .err').forEach(e=>e.textContent='');$('#resume').hidden=true;ls.del('fc-quote');go(1)}
+  function reset(){Q=Object.assign({},DEF);touched={};$$('.field').forEach(f=>f.classList.remove('ok','bad'));$$('.field .err').forEach(e=>e.textContent='');$('#resume').hidden=true;ls.del('fc-quote2');go(1)}
   $('#again').addEventListener('click',reset);$('#restart').addEventListener('click',reset);
-
-  /* Logo: subir, previsualizar y compartir con el cotizador */
-  const OK_TYPES=['image/png','image/jpeg','image/webp','application/pdf'];
-  const startedAt=Date.now();
-  function showLogo(){
-    [$('#logoOn'),$('#logoOn2')].forEach((box,i)=>{box.innerHTML='';
-      if(logoData){const img=document.createElement('img');img.src=logoData;img.alt='';box.appendChild(img)}
-      else if(Q.logoName){const s=document.createElement('span');s.className='ph';s.textContent='PDF adjunto';box.appendChild(s)}
-      else if(i===0){const s=document.createElement('span');s.className='ph';s.innerHTML='Tu logo<br>aquí';box.appendChild(s)}});
-    const name=Q.logoName;
-    $('#drop1Text').textContent=name?'Logo cargado: '+name:'Arrastra tu logo aquí o toca para elegirlo';
-    $('#drop2Text').textContent=name?'Logo cargado: '+name:'Arrastra tu logo o toca para elegirlo';
-    $('#logoClear').hidden=!name;
-  }
-  function clearLogo(){logoData='';logoFile=null;Q.logoName='';showLogo();save()}
-  function handleFile(file,errEl){
-    errEl.textContent='';if(!file)return;
-    if(!OK_TYPES.includes(file.type)){errEl.textContent='Ese formato no sirve. Sube un PNG, JPG o PDF.';return}
-    if(file.size>10*1024*1024){errEl.textContent='El archivo pesa más de 10 MB. Prueba con una versión más liviana.';return}
-    logoFile=file;Q.logoName=file.name;Q.logo='si';
-    if(file.type==='application/pdf'){logoData='';showLogo();render();return}
-    const r=new FileReader();r.onload=()=>{logoData=r.result;showLogo();render()};r.onerror=()=>{errEl.textContent='No pudimos leer el archivo. Intenta de nuevo.'};r.readAsDataURL(file);
-  }
-  [['#drop1','#logoFile1','#logoErr1'],['#drop2','#logoFile2','#logoErr2']].forEach(([d,i,e])=>{
-    const drop=$(d),inp=$(i),err=$(e);
-    inp.addEventListener('change',()=>{handleFile(inp.files[0],err);inp.value=''});
-    ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,x=>{x.preventDefault();drop.classList.add('over')}));
-    ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,x=>{x.preventDefault();drop.classList.remove('over')}));
-    drop.addEventListener('drop',x=>handleFile(x.dataTransfer.files[0],err));
-  });
-  $('#logoClear').addEventListener('click',()=>{clearLogo();render()});
-  $('#logoToQuote').addEventListener('click',()=>{if(Q.logoName)Q.logo='si';Q.step=Q.qty?2:1;render();goTo('#cotizar')});
-  $$('.sw').forEach(s=>s.addEventListener('click',()=>{$$('.sw').forEach(x=>x.setAttribute('aria-pressed',String(x===s)));html.style.setProperty('--pack',s.dataset.color)}));
-
-  /* Mochila que gira con el scroll */
-  const packView=$('#packView');
-  if(!RM)addEventListener('scroll',()=>{const r=packView.getBoundingClientRect();const p=clamp(1-(r.top+r.height/2)/innerHeight,0,1);packView.style.transform=`rotate(${(.5-p)*-10}deg) scale(${.94+Math.min(p,.5)*.12})`},{passive:true});
-
-  showLogo();render(false);
-  if(mqMob.matches)showStory(0);
+  render(false);
   addEventListener('resize',()=>render(false));
+  }
+
+  if(mqMob.matches)showStory(0);
 })();

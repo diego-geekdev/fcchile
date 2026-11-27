@@ -1,16 +1,26 @@
 <?php
 /**
- * Cotizador en 4 pasos. Envía a /wp-json/fc/v1/cotizacion (plugin fc-core).
+ * Cierre «Parte con tu equipo First Coffee»: cotizador en 4 pasos + WhatsApp.
+ * Envía a /wp-json/fc/v1/cotizacion (plugin fc-core).
  */
+$fc_usos   = function_exists( 'fc_opciones_uso' ) ? fc_opciones_uso() : array();
 $fc_kits   = function_exists( 'fc_opciones_kits' ) ? fc_opciones_kits() : array();
 $fc_origen = function_exists( 'fc_opciones_origen' ) ? fc_opciones_origen() : array();
-if ( ! $fc_kits ) {
+if ( ! $fc_kits || ! $fc_usos ) {
 	return; // Sin el plugin no hay dónde guardar la cotización.
 }
 $fc_plazo = fct_opt( 'plazo_respuesta', 'a la brevedad' );
+$fc_wa    = fct_whatsapp( 'Hola, quiero cotizar un equipo First Coffee' );
 ?>
 <section class="sec wrap" id="cotizar">
-	<div class="sec-head rv"><span class="eyebrow">Cotiza</span><h2>Tu cotización en 4 pasos.</h2><p class="lead">Una pregunta a la vez. Te toma menos de un minuto y te respondemos por WhatsApp o correo.</p></div>
+	<div class="sec-head rv">
+		<span class="eyebrow">Cotiza</span>
+		<h2>Parte con tu equipo<br>First Coffee.</h2>
+		<p class="lead">Cuéntanos dónde piensas vender y te enviamos precio, plazo de entrega y forma de compra. Te toma menos de un minuto.</p>
+		<?php if ( '#cotizar' !== $fc_wa ) : ?>
+			<p class="cot-alt">¿Prefieres conversar? <a href="<?php echo esc_url( $fc_wa ); ?>" target="_blank" rel="noopener">Escríbenos por WhatsApp ↗</a></p>
+		<?php endif; ?>
+	</div>
 	<div class="quote">
 		<form class="qcard" id="qcard" novalidate>
 			<div class="resume" id="resume" hidden><span>Retomamos tu cotización donde la dejaste.</span><button class="linkbtn" type="button" id="restart">Empezar de nuevo</button></div>
@@ -21,30 +31,23 @@ $fc_plazo = fct_opt( 'plazo_respuesta', 'a la brevedad' );
 			<div class="sr" aria-hidden="true"><label for="q-web">No completar</label><input id="q-web" name="sitio_web" type="text" tabindex="-1" autocomplete="off"></div>
 
 			<div class="qstep" data-step="1">
-				<h3 tabindex="-1">¿Cuántos kits necesitas?</h3>
-				<div class="opts" role="group" aria-label="Cantidad de kits">
-					<?php foreach ( $fc_kits as $fc_k => $fc_t ) : ?>
-						<button class="opt" type="button" data-qty="<?php echo esc_attr( $fc_k ); ?>" aria-pressed="false"><b><?php echo esc_html( $fc_t[0] ); ?></b><small><?php echo esc_html( $fc_t[1] ); ?></small></button>
+				<h3 tabindex="-1">¿Dónde vas a vender?</h3>
+				<div class="opts" role="group" aria-label="Dónde vas a vender">
+					<?php foreach ( $fc_usos as $fc_k => $fc_t ) : ?>
+						<button class="opt" type="button" data-uso="<?php echo esc_attr( $fc_k ); ?>" aria-pressed="false"><b><?php echo esc_html( $fc_t[0] ); ?></b><small><?php echo esc_html( $fc_t[1] ); ?></small></button>
 					<?php endforeach; ?>
 				</div>
 			</div>
 
 			<div class="qstep" data-step="2" hidden>
-				<h3 tabindex="-1">¿Le ponemos tu logo?</h3>
-				<div class="opts two" role="group" aria-label="Personalización">
-					<button class="opt" type="button" data-logo="si" aria-pressed="false"><b>Sí, con mi logo</b></button>
-					<button class="opt" type="button" data-logo="no" aria-pressed="false"><b>Sin logo</b></button>
+				<h3 tabindex="-1">¿Cuántos equipos necesitas?</h3>
+				<div class="opts" role="group" aria-label="Cantidad de equipos">
+					<?php foreach ( $fc_kits as $fc_k => $fc_t ) : ?>
+						<button class="opt" type="button" data-qty="<?php echo esc_attr( $fc_k ); ?>" aria-pressed="false"><b><?php echo esc_html( $fc_t[0] ); ?></b><small><?php echo esc_html( $fc_t[1] ); ?></small></button>
+					<?php endforeach; ?>
 				</div>
-				<div id="logoArea" hidden style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center">
-					<label class="drop" id="drop2" for="logoFile2" data-cursor="Subir"><strong id="drop2Text">Arrastra tu logo o toca para elegirlo</strong><small>PNG, JPG o PDF · hasta 10 MB · también puedes mandarlo después</small></label>
-					<div class="mini-pack" aria-hidden="true">
-						<svg viewBox="0 0 200 260"><rect x="30" y="38" width="140" height="210" rx="30" class="f-pack"/><rect x="40" y="38" width="120" height="78" rx="24" class="f-pack2"/><rect x="52" y="160" width="96" height="72" rx="16" class="f-pack2"/><rect x="70" y="86" width="60" height="58" rx="10" class="s-slot"/></svg>
-						<div class="logo-on" id="logoOn2"></div>
-					</div>
-				</div>
-				<input class="sr" type="file" id="logoFile2" accept=".png,.jpg,.jpeg,.webp,.pdf,image/png,image/jpeg,image/webp,application/pdf">
-				<p class="err" id="logoErr2" role="alert"></p>
-				<div class="field"><label for="q-comments">Comentarios <span class="note">(opcional)</span></label><textarea id="q-comments" maxlength="2000" placeholder="Por ejemplo: colores de mi marca, fecha en que lo necesito, ciudad donde voy a vender"></textarea></div>
+				<p class="err" id="qtyErr" role="alert"></p>
+				<div class="field"><label for="q-comments">Comentarios <span class="note">(opcional)</span></label><textarea id="q-comments" maxlength="2000" placeholder="Por ejemplo: comuna o ciudad donde vas a vender, fecha en que lo necesitas, si es para un evento"></textarea></div>
 				<div class="qnav"><button class="btn ghost small" type="button" data-back>Volver</button><button class="btn small" type="button" data-next="2">Continuar</button></div>
 			</div>
 
@@ -76,7 +79,7 @@ $fc_plazo = fct_opt( 'plazo_respuesta', 'a la brevedad' );
 			<div class="qstep done" data-step="5" hidden id="done">
 				<div class="cupwrap"><div class="cup"><i></i></div></div>
 				<h3 tabindex="-1">¡Listo, recibimos tu solicitud!</h3>
-				<p class="lead">Te respondemos <?php echo esc_html( $fc_plazo ); ?> por WhatsApp o correo. También te enviamos una copia a tu correo.</p>
+				<p class="lead">Te respondemos <?php echo esc_html( $fc_plazo ); ?> por WhatsApp o correo con precio, plazo de entrega y forma de compra. También te enviamos una copia a tu correo.</p>
 				<p class="note" id="doneNum"></p>
 				<div class="qnav"><button class="btn ghost small" type="button" id="again">Hacer otra cotización</button></div>
 			</div>
@@ -85,12 +88,12 @@ $fc_plazo = fct_opt( 'plazo_respuesta', 'a la brevedad' );
 		<aside class="qside" aria-label="Resumen de tu cotización">
 			<h4>Tu cotización</h4>
 			<dl class="sum">
-				<div><dt>Kits</dt><dd id="sQty" class="empty">Sin elegir</dd></div>
-				<div><dt>Logo</dt><dd id="sLogo" class="empty">Sin elegir</dd></div>
+				<div><dt>Dónde vas a vender</dt><dd id="sUso" class="empty">Sin elegir</dd></div>
+				<div><dt>Equipos</dt><dd id="sQty" class="empty">Sin elegir</dd></div>
 				<div><dt>Comentarios</dt><dd id="sCom" class="empty">Sin comentarios</dd></div>
 				<div><dt>Contacto</dt><dd id="sCon" class="empty">Falta completar</dd></div>
 			</dl>
-			<p class="note">Se llena mientras avanzas. Si cierras la página, guardamos lo avanzado en este navegador (menos el archivo del logo).</p>
+			<p class="note">Valores referenciales en pesos chilenos; el precio final se confirma en la cotización.</p>
 		</aside>
 	</div>
 </section>

@@ -1,6 +1,6 @@
 # First Coffee Chile — sitio WordPress
 
-Tema y plugins a medida de **firstcoffeechile.cl** (Fase 1: portada con cotizador del kit).
+Tema y plugins a medida de **firstcoffeechile.cl**: dispensador portátil de café caliente (portada, páginas de producto, calculadora y cotizador).
 Desarrollo: GeekDev — Diego Catalán.
 
 ## Estructura
@@ -21,10 +21,19 @@ El repositorio refleja la carpeta `wp-content` del sitio. No incluye el núcleo 
 | CPT | Uso |
 |---|---|
 | `fc_cotizacion` | Solicitudes del cotizador. Privadas; estados Nueva / Respondida / Cerrada. |
-| `fc_paso` | Pasos de «Cómo funciona». |
-| `fc_pieza` | Piezas del kit (mochila, termo, accesorios). |
-| `fc_video` | Mosaico de videos + taxonomía `fc_tipo_video`. |
+| `fc_paso` | «Cuatro pasos, sin electricidad» (Carga, Mochila, Presión, Servicio). |
+| `fc_pieza` | Componentes en la ilustración «El equipo» (estanque, mochila, bomba y línea). |
+| `fc_beneficio` | «Lo que cambia en tu jornada» (6 beneficios con ícono). |
+| `fc_uso` | «Un equipo, varios negocios» (calle, eventos, oficinas, reparto). |
 | `fc_faq` | Preguntas frecuentes. |
+| `fc_video` | Videos (sin uso en la portada actual; se conserva). |
+
+Páginas (las crea **First Coffee → Ajustes → Cargar contenido del sitio**): La empresa, Ficha y rentabilidad,
+Manual de operación, Servicio y repuestos, Brochures (+ Calle, Eventos, Negocios).
+
+Shortcodes para las páginas: `[fc_calculadora]`, `[fc_escenarios]`, `[fc_brochures]`, `[fc_precio]`,
+`[fc_whatsapp texto="" mensaje=""]`, `[fc_imprimir]`. Los precios, vasos por carga, margen y jornadas
+se editan en **Ajustes → Precios y rentabilidad** y se recalculan en todo el sitio.
 
 Ajustes generales en **First Coffee → Ajustes** (opción `fc_ajustes`).
 Endpoint del cotizador: `POST /wp-json/fc/v1/cotizacion` (nonce, honeypot, tiempo mínimo y límite por IP).

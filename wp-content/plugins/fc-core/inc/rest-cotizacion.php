@@ -71,14 +71,15 @@ function fc_rest_cotizacion( WP_REST_Request $req ) {
 	}
 
 	/* Validación (mismas reglas que el formulario). */
+	$uso = $g( 'uso' );
+	if ( ! array_key_exists( $uso, fc_opciones_uso() ) ) {
+		return fc_error( 'Elige dónde vas a vender.', 'uso' );
+	}
 	$kits = $g( 'kits' );
 	if ( ! array_key_exists( $kits, fc_opciones_kits() ) ) {
-		return fc_error( 'Elige cuántos kits necesitas.', 'kits' );
+		return fc_error( 'Elige cuántos equipos necesitas.', 'kits' );
 	}
-	$logo = $g( 'logo' );
-	if ( ! in_array( $logo, array( 'si', 'no' ), true ) ) {
-		return fc_error( 'Elige si quieres tu logo o no.', 'logo' );
-	}
+	$logo = 'si' === $g( 'logo' ) ? 'si' : 'no'; // Opcional (versiones anteriores del cotizador).
 	$nombre = sanitize_text_field( $g( 'nombre' ) );
 	if ( mb_strlen( $nombre ) < 2 ) {
 		return fc_error( 'Escribe tu nombre.', 'name' );
@@ -124,6 +125,7 @@ function fc_rest_cotizacion( WP_REST_Request $req ) {
 		return fc_error( 'No pudimos guardar tu cotización. Inténtalo de nuevo o escríbenos por WhatsApp.', '', 500 );
 	}
 	$meta = array(
+		'uso'         => $uso,
 		'kits'        => $kits,
 		'logo'        => $logo,
 		'comentarios' => $comentarios,

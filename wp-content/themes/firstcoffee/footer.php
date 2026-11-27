@@ -16,13 +16,13 @@ $fc_letras = array( 'FIRST', 'COFFEE' );
 		<div class="foot-top">
 			<div class="foot-brand">
 				<img class="foot-logo" src="<?php echo esc_url( fct_img( 'first-coffee-logo-blanco.png' ) ); ?>" alt="First Coffee" width="548" height="458" loading="lazy">
-				<p>Café de grano en la calle,<br>directo a tu ventanilla.</p>
+				<p>Dispensador portátil de café caliente.<br>Ingeniería chilena.</p>
 			</div>
 			<nav class="foot-cols" aria-label="Pie de página">
-				<div><h4>Menú</h4>
-					<a href="<?php echo esc_url( $fc_home . '#como' ); ?>">Cómo funciona</a>
-					<a href="<?php echo esc_url( $fc_home . '#kit' ); ?>">El kit</a>
-					<a href="<?php echo esc_url( $fc_home . '#videos' ); ?>">Videos</a>
+				<div><h4>Sitio</h4>
+					<?php foreach ( fct_menu() as $fc_it ) : ?>
+						<a href="<?php echo esc_url( $fc_it[0] ); ?>"><?php echo esc_html( $fc_it[1] ); ?></a>
+					<?php endforeach; ?>
 					<a href="<?php echo esc_url( $fc_home . '#cotizar' ); ?>">Cotizar</a>
 				</div>
 				<?php if ( $fc_ig || $fc_tt ) : ?>
@@ -61,6 +61,7 @@ $fc_letras = array( 'FIRST', 'COFFEE' );
 				if(n>0&&c>0)w.style.fontSize=Math.min(260,Math.floor(100*c/n*0.995))+'px';}
 			fit();addEventListener('resize',fit);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);})();
 		</script>
+		<p class="foot-legal">Valores referenciales en pesos chilenos, sujetos a confirmación en la cotización.</p>
 		<div class="foot-bottom">
 			<span>© <?php echo esc_html( wp_date( 'Y' ) ); ?> First Coffee Chile · Santiago</span>
 			<a class="foot-up" href="#top">Volver arriba ↑</a>
